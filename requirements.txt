@@ -10,3 +10,4 @@ coverage
 deprecation
 packaging
 filetype
+nodejs-bin[cmd]

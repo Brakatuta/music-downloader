@@ -31,6 +31,26 @@ DEFAULT_SPOTIFY_CLIENT_SECRET : str = "13f43cc9bc3844deae7a2f778b6845f1"
 
 YOUTUBE_BASELINK : str = "https://www.youtube.com/watch?v="
 
+CLIENTS = {
+    1: "WEB",
+    2: "WEB_EMBED",
+    3: "WEB_MUSIC",
+    4: "WEB_CREATOR",
+    5: "WEB_SAFARI",
+    6: "ANDROID",
+    7: "ANDROID_MUSIC",
+    8: "ANDROID_CREATOR",
+    9: "ANDROID_VR",
+    10: "ANDROID_PRODUCER",
+    11: "ANDROID_TESTSUITE",
+    12: "IOS",
+    13: "IOS_MUSIC",
+    14: "IOS_CREATOR",
+    15: "MWEB",
+    16: "TV_EMBED",
+    17: "MEDIA_CONNECT",
+}
+
 MAXAMOUNT_THREADS : int = os.cpu_count() * 2
 MAXAMOUNT_YT_VIDEOS_TO_SEARCH : int = 32
 MAXAMOUNT_RETRIES : int = 10
@@ -167,6 +187,21 @@ def get_youtube_video(track_title, artist_name, duration) -> str | None:
 
     return results[0][4]
 
+def get_yt_object(video_link) -> YouTube | None:
+    """Download filetype (video or audio) with one of the clients from the CLIENTS list."""
+    for _, client in CLIENTS.items():
+        try:
+            if use_proxies:
+                yt = (YouTube(url=video_link, client=client, proxies=Proxy.get_random_proxy(), on_progress_callback=on_progress))
+            else:
+                yt = (YouTube(url=video_link, client=client, on_progress_callback=on_progress))
+            # Return from function if success
+            return yt
+        except Exception as e:
+            print(f'Error occured while downloading via "{client}" client: {e}\n')
+
+    raise Exception("Failed to download asset with all available clients")
+
 def download_audio_from_youtube(download_path, title, artist, duration, album_cover_url, queue_index) -> None:
     global downloaded_audios
     global failed_downloads
@@ -181,14 +216,7 @@ def download_audio_from_youtube(download_path, title, artist, duration, album_co
     if youtube_link != None:
         update_console_log(f"Found YouTube link: {youtube_link}\n")
         try:
-            if use_proxies:
-                proxy = Proxy.get_random_proxy()
-                yt = YouTube(youtube_link,
-                             proxies=proxy,
-                             on_progress_callback=on_progress,
-                            )
-            else:
-                yt = YouTube(youtube_link, on_progress_callback=on_progress)
+            yt = get_yt_object(youtube_link)
 
             update_console_log(f"Title: {yt.title}\n")
             update_console_log(f"Views: {yt.views}\n")
