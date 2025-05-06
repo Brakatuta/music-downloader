@@ -185,6 +185,8 @@ def download_audio_from_youtube(download_path, title, artist, duration, album_co
                 proxy = Proxy.get_random_proxy()
                 yt = YouTube(youtube_link,
                              proxies=proxy,
+                             use_oauth=True,
+                             allow_oauth_cache=True,
                              on_progress_callback=on_progress,
                             )
             else:
