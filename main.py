@@ -9,12 +9,11 @@ import streamlit as st
 
 import spotipy
 
-from pytubefix import YouTube
-from pytubefix.cli import on_progress
-from pytubefix.innertube import _default_clients
-from pytubefix.helpers import install_proxy
-from pytubefix.request import _execute_request
-import json
+from Utils.pytubefix import YouTube
+from Utils.pytubefix.cli import on_progress
+from Utils.pytubefix.innertube import InnerTube
+from Utils.pytubefix.innertube import VerficationCache
+
 
 from Utils import SSLCertHelper
 from Utils import Threaded
@@ -61,6 +60,8 @@ download_canceled : bool = False
 audios_to_download : int = 0
 failed_downloads : int = 0
 downloaded_audios : int = 0
+
+yt_verfied : bool = False
 
 if 'download_ready' not in st.session_state:
     st.session_state.download_ready = False
@@ -406,15 +407,34 @@ def __ui():
     if spotify_url:
         col1, col2 = st.columns([3, 1])
         with col1:
+            if st.button("I finished verfication"):
+                VerficationCache().i_am_verified()
+
             if st.button("Prepare Download"):
                 url = "https://www.youtube.com/watch?v=jNQXAC9IVRw&ab_channel=jawed"
 
-                yt = YouTube(url, 
-                             use_oauth=True, 
+                if not VerficationCache().is_verified():
+                    yt = YouTube(url, 
+                             use_oauth=True,
+                             output_outh=True,
                              allow_oauth_cache=False, 
                              on_progress_callback=on_progress
                             )
-                ys = yt.streams.get_highest_resolution()
+                    try:
+                        ys = yt.streams.get_highest_resolution()
+                    except Exception as e:
+                        st.error(f"Error getting highest resolution: {e}")
+                    
+                    time.sleep(1)
+                    verification_cache = VerficationCache()
+                    verification_data = verification_cache.get_verification_data()
+                    verification_url = verification_data["verification_url"]
+                    verification_user_code = verification_data["user_code"]
+
+                    print("Verification URL:", verification_url)
+                    print("Verification User Code:", verification_user_code)
+                    st.write("Verify YouTube Account here [here](" + verification_url + ") and input code: " + verification_user_code)
+                    return
 
                 try:
                     # Start download in a background thread

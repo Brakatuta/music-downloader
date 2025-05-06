@@ -3,7 +3,7 @@ from . import SSLCertHelper
 from . import Proxy
 from . import markers
 
-from pytubefix import YouTube
+from .pytubefix import YouTube
 
 SSLCertHelper.set_default_ssl_context()
 
