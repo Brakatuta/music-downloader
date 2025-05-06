@@ -417,7 +417,7 @@ def __ui():
                     yt = YouTube(url, 
                              use_oauth=True,
                              output_outh=True,
-                             allow_oauth_cache=False, 
+                             allow_oauth_cache=True,
                              on_progress_callback=on_progress
                             )
                     try:
