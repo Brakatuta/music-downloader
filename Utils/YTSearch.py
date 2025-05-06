@@ -90,7 +90,7 @@ class YoutubeSearch:
 
 # def test_search():
 #     test_string = "Captain Qubz - High Dosage"
-#     search = YoutubeSearch(test_string)
+#     search = YoutubeSearch(test_string, 20, True)
     
 #     sorted_search = sorted(search.get_results(), key=lambda x: x['views'], reverse=True)
 

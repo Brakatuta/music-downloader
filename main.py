@@ -11,11 +11,10 @@ import spotipy
 
 from Utils.pytubefix import YouTube
 from Utils.pytubefix.cli import on_progress
-from Utils.pytubefix.innertube import InnerTube
 from Utils.pytubefix.innertube import VerficationCache
 
-
 from Utils import SSLCertHelper
+from Utils import Proxy
 from Utils import Threaded
 from Utils import FileOperations
 from Utils import AudioOperations
@@ -182,10 +181,19 @@ def download_audio_from_youtube(download_path, title, artist, duration, album_co
     if youtube_link != None:
         update_console_log(f"Found YouTube link: {youtube_link}\n")
         try:
-            yt = YouTube(youtube_link)
+            if use_proxies:
+                proxy = Proxy.get_random_proxy()
+                yt = YouTube(youtube_link,
+                             proxies=proxy,
+                             on_progress_callback=on_progress,
+                            )
+            else:
+                yt = YouTube(youtube_link, on_progress_callback=on_progress)
+
             update_console_log(f"Title: {yt.title}\n")
             update_console_log(f"Views: {yt.views}\n")
-            audio_streams : dict = Filters.get_desired_quality_audiostreams(download_quality_level, youtube_link, use_proxies)
+
+            audio_streams : dict = Filters.get_desired_quality_audiostreams(download_quality_level, yt.streams)
             for audio_quality in audio_streams.keys():
                 audio_stream = audio_streams[audio_quality]
                 audio_file_mp4 = audio_stream.download(download_path)
@@ -418,7 +426,7 @@ def __ui():
                              use_oauth=True,
                              output_outh=True,
                              allow_oauth_cache=True,
-                             on_progress_callback=on_progress
+                             on_progress_callback=on_progress,
                             )
                     try:
                         ys = yt.streams.get_highest_resolution()

@@ -1,11 +1,5 @@
 import re
-from . import SSLCertHelper
-from . import Proxy
 from . import markers
-
-from .pytubefix import YouTube
-
-SSLCertHelper.set_default_ssl_context()
 
 YT_MUSIC_MARKERS_ALL = []
 YT_MUSIC_LYRICS_MARKERS_ALL = []
@@ -79,14 +73,7 @@ def song_title_similiraty_ratio(str1 : str, str2 : str):
     
     return simlarity
 
-def get_desired_quality_audiostreams(download_quality_level, youtube_link, use_proxy = False):
-    if use_proxy == True:
-        proxy = Proxy.get_random_proxy()
-        print("Getting streams with proxy: ", proxy)
-        streams = YouTube(youtube_link, proxies=proxy).streams.filter(only_audio=True)
-    else:
-        streams = YouTube(youtube_link).streams.filter(only_audio=True)
-        
+def get_desired_quality_audiostreams(download_quality_level, streams):
     sorted_streams = {}
 
     for stream in streams:
