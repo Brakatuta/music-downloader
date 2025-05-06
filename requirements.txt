@@ -1,5 +1,13 @@
 streamlit
-google-cloud-firestore
 pytubefix
+aiotube
 spotipy
+redis
+requests
+urllib3
+certifi
 eyed3
+coverage
+deprecation
+packaging
+filetype

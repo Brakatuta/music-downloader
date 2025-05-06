@@ -6,6 +6,10 @@ import json
 
 from . import Proxy
 
+from . import SSLCertHelper
+
+SSLCertHelper.set_default_ssl_context()
+
 BASE_URL = "https://youtube.com"
 
 class YoutubeSearch:

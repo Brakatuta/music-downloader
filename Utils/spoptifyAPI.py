@@ -2,6 +2,10 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 
+from . import SSLCertHelper
+
+SSLCertHelper.set_default_ssl_context()
+
 def validate_spotify_credentials(client_id: str, client_secret: str) -> list:
     print("Validating Spotify credentials...")
     try:

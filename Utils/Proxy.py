@@ -1,6 +1,10 @@
 import requests
 import random
 
+from . import SSLCertHelper
+
+SSLCertHelper.set_default_ssl_context()
+
 def get_active_proxies():
     url = "https://proxylist.geonode.com/api/proxy-list?anonymityLevel=transparent&protocols=http%2Chttps&limit=500&page=1&sort_by=lastChecked&sort_type=desc"
     

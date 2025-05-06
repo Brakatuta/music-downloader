@@ -1,5 +1,9 @@
 import threading
 
+from . import SSLCertHelper
+
+SSLCertHelper.set_default_ssl_context()
+
 # ThreadPool class
 # max workers: maximum number of threads to be created
 # max retries: maximum number of retries for each thread
