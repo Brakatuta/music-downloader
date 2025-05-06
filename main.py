@@ -10,6 +10,11 @@ import streamlit as st
 import spotipy
 
 from pytubefix import YouTube
+from pytubefix.cli import on_progress
+from pytubefix.innertube import _default_clients
+from pytubefix.helpers import install_proxy
+from pytubefix.request import _execute_request
+import json
 
 from Utils import SSLCertHelper
 from Utils import Threaded
@@ -402,6 +407,15 @@ def __ui():
         col1, col2 = st.columns([3, 1])
         with col1:
             if st.button("Prepare Download"):
+                url = "https://www.youtube.com/watch?v=jNQXAC9IVRw&ab_channel=jawed"
+
+                yt = YouTube(url, 
+                             use_oauth=True, 
+                             allow_oauth_cache=False, 
+                             on_progress_callback=on_progress
+                            )
+                ys = yt.streams.get_highest_resolution()
+
                 try:
                     # Start download in a background thread
                     download_async_wrapper(spotify_url, download_path)
