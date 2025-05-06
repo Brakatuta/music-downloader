@@ -10,15 +10,16 @@ import streamlit as st
 import spotipy
 
 from pytubefix import YouTube
-from pytubefix.innertube import _default_clients
-_default_clients["ANDROID_MUSIC"] = _default_clients["ANDROID"]
 
+from Utils import SSLCertHelper
 from Utils import Threaded
 from Utils import FileOperations
 from Utils import AudioOperations
 from Utils import spoptifyAPI
 from Utils import Filters
 from Utils.YTSearch import YoutubeSearch
+
+SSLCertHelper.set_default_ssl_context()
 
 sp : spotipy.Spotify
 

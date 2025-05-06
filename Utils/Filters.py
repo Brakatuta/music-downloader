@@ -4,8 +4,6 @@ from . import Proxy
 from . import markers
 
 from pytubefix import YouTube
-from pytubefix.innertube import _default_clients
-_default_clients["ANDROID_MUSIC"] = _default_clients["ANDROID"]
 
 SSLCertHelper.set_default_ssl_context()
 
