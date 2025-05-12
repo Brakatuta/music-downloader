@@ -514,40 +514,12 @@ _token_timeout = 1800
 _cache_dir = pathlib.Path(__file__).parent.resolve() / '__cache__'
 _token_file = os.path.join(_cache_dir, 'tokens.json')
 
-# // used to get verfication data for oauth
-_verfication_cache = {
-    "verified" : False,
-    "verification_url" : "",
-    "user_code" : ""
-}
-
-class VerficationCache(object):
-    def __init__(self):
-        self.verification_url = _verfication_cache["verification_url"]
-        self.user_code = _verfication_cache["user_code"]
-    
-    def get_verification_data(self):
-        return {
-            "verification_url" : self.verification_url,
-            "user_code" : self.user_code
-        }
-    
-    def is_verified(self):
-        return _verfication_cache["verified"]
-    
-    def i_am_verified(self):
-        _verfication_cache["verified"] = True
-# //
 
 def _default_oauth_verifier(verification_url: str, user_code: str):
     """ Default `print(...)` and `input(...)` for oauth verification """
-    _verfication_cache["verified"] = False
     print(f'Please open {verification_url} and input code {user_code}')
-    _verfication_cache["verification_url"] = verification_url
-    _verfication_cache["user_code"] = user_code
-    #input('Press enter when you have completed this step.')
+    input('Press enter when you have completed this step.')
 
-# //
 
 def _default_po_token_verifier() -> Tuple[str, str]:
     """
@@ -566,7 +538,6 @@ class InnerTube:
             self,
             client='ANDROID_VR',
             use_oauth=False,
-            output_outh=False,
             allow_cache=True,
             token_file=None,
             oauth_verifier=None,
@@ -613,7 +584,6 @@ class InnerTube:
         self.access_visitorData = None
 
         self.use_oauth = use_oauth
-        self.output_outh = output_outh
         self.allow_cache = allow_cache
         self.oauth_verifier = oauth_verifier or _default_oauth_verifier
 
@@ -714,12 +684,6 @@ class InnerTube:
         response_data = json.loads(response.read())
         verification_url = response_data['verification_url']
         user_code = response_data['user_code']
-
-        if self.output_outh:
-            _verfication_cache["verified"] = False
-            _verfication_cache['verification_url'] = verification_url
-            _verfication_cache['user_code'] = user_code
-
         self.oauth_verifier(verification_url, user_code)
 
         data = {

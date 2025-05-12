@@ -10,8 +10,6 @@ import streamlit as st
 import spotipy
 
 from Utils.pytubefix import YouTube
-from Utils.pytubefix.cli import on_progress
-from Utils.pytubefix.innertube import VerficationCache
 
 from Utils import SSLCertHelper
 from Utils import Proxy
@@ -30,26 +28,6 @@ DEFAULT_SPOTIFY_CLIENT_ID : str = "b311200a3cc24de296ab17294a0e207f"
 DEFAULT_SPOTIFY_CLIENT_SECRET : str = "13f43cc9bc3844deae7a2f778b6845f1"
 
 YOUTUBE_BASELINK : str = "https://www.youtube.com/watch?v="
-
-CLIENTS = {
-    1: "WEB",
-    2: "WEB_EMBED",
-    3: "WEB_MUSIC",
-    4: "WEB_CREATOR",
-    5: "WEB_SAFARI",
-    6: "ANDROID",
-    7: "ANDROID_MUSIC",
-    8: "ANDROID_CREATOR",
-    9: "ANDROID_VR",
-    10: "ANDROID_PRODUCER",
-    11: "ANDROID_TESTSUITE",
-    12: "IOS",
-    13: "IOS_MUSIC",
-    14: "IOS_CREATOR",
-    15: "MWEB",
-    16: "TV_EMBED",
-    17: "MEDIA_CONNECT",
-}
 
 MAXAMOUNT_THREADS : int = os.cpu_count() * 2
 MAXAMOUNT_YT_VIDEOS_TO_SEARCH : int = 32
@@ -188,19 +166,11 @@ def get_youtube_video(track_title, artist_name, duration) -> str | None:
     return results[0][4]
 
 def get_yt_object(video_link) -> YouTube | None:
-    """Download filetype (video or audio) with one of the clients from the CLIENTS list."""
-    for _, client in CLIENTS.items():
-        try:
-            if use_proxies:
-                yt = (YouTube(url=video_link, client=client, proxies=Proxy.get_random_proxy(), on_progress_callback=on_progress))
-            else:
-                yt = (YouTube(url=video_link, client=client, on_progress_callback=on_progress))
-            # Return from function if success
-            return yt
-        except Exception as e:
-            print(f'Error occured while downloading via "{client}" client: {e}\n')
-
-    raise Exception("Failed to download asset with all available clients")
+    if use_proxies:
+        yt = YouTube(url=video_link, proxies=Proxy.get_random_proxy())
+    else:
+        yt = YouTube(url=video_link)
+    return yt
 
 def download_audio_from_youtube(download_path, title, artist, duration, album_cover_url, queue_index) -> None:
     global downloaded_audios
@@ -441,45 +411,11 @@ def __ui():
     download_path = temp_downloads_dir
 
     if spotify_url:
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            if st.button("I finished verfication"):
-                VerficationCache().i_am_verified()
+        download_button = st.button("Start Download")
+        if download_button:
+            st.session_state.download_ready = False
+            download_async_wrapper(spotify_url, download_path)
 
-            if st.button("Prepare Download"):
-                url = "https://www.youtube.com/watch?v=jNQXAC9IVRw&ab_channel=jawed"
-
-                if not VerficationCache().is_verified():
-                    yt = YouTube(url, 
-                             use_oauth=True,
-                             output_outh=True,
-                             allow_oauth_cache=True,
-                             on_progress_callback=on_progress,
-                            )
-                    try:
-                        ys = yt.streams.get_highest_resolution()
-                    except Exception as e:
-                        st.error(f"Error getting highest resolution: {e}")
-                    
-                    time.sleep(1)
-                    verification_cache = VerficationCache()
-                    verification_data = verification_cache.get_verification_data()
-                    verification_url = verification_data["verification_url"]
-                    verification_user_code = verification_data["user_code"]
-
-                    print("Verification URL:", verification_url)
-                    print("Verification User Code:", verification_user_code)
-                    st.write("Verify YouTube Account here [here](" + verification_url + ") and input code: " + verification_user_code)
-                    return
-
-                try:
-                    # Start download in a background thread
-                    download_async_wrapper(spotify_url, download_path)
-                    
-                    st.info("Download preparation started...")
-                except Exception as e:
-                    st.error(f"Error starting download: {e}")
-        
         check_button = st.button("Check Download Status")
         if check_button:
             if downloaded_audios == downloaded_audios:

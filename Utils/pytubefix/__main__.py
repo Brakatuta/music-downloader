@@ -35,7 +35,7 @@ from subprocess import CalledProcessError
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from .. import pytubefix as pytubefix
-from . import exceptions as exceptions
+from . import exceptions
 from . import extract, request
 from . import Stream, StreamQuery
 from .helpers import install_proxy
@@ -59,7 +59,6 @@ class YouTube:
             proxies: Optional[Dict[str, str]] = None,
             use_oauth: bool = False,
             allow_oauth_cache: bool = True,
-            output_outh : bool = False,
             token_file: Optional[str] = None,
             oauth_verifier: Optional[Callable[[str, str], None]] = None,
             use_po_token: Optional[bool] = False,
@@ -161,7 +160,6 @@ class YouTube:
 
         self.use_oauth = use_oauth
         self.allow_oauth_cache = allow_oauth_cache
-        self.output_outh = output_outh
         self.token_file = token_file
         self.oauth_verifier = oauth_verifier
 
@@ -464,7 +462,6 @@ class YouTube:
             innertube = InnerTube(
                 client=self.client,
                 use_oauth=self.use_oauth,
-                output_outh=self.output_outh,
                 allow_cache=self.allow_oauth_cache,
                 token_file=self.token_file,
                 oauth_verifier=self.oauth_verifier,
@@ -527,7 +524,6 @@ class YouTube:
         innertube = InnerTube(
             client='TV' if self.use_oauth else 'WEB',
             use_oauth=self.use_oauth,
-            output_outh=self.output_outh,
             allow_cache=self.allow_oauth_cache,
             token_file=self.token_file,
             oauth_verifier=self.oauth_verifier,
@@ -552,7 +548,6 @@ class YouTube:
         innertube = InnerTube(
             client=self.client,
             use_oauth=self.use_oauth,
-            output_outh=self.output_outh,
             allow_cache=self.allow_oauth_cache,
             token_file=self.token_file,
             oauth_verifier=self.oauth_verifier,

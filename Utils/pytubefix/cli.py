@@ -10,7 +10,7 @@ import datetime as dt
 import subprocess  # nosec
 from typing import List, Optional
 
-from . import exceptions as exceptions
+import exceptions as exceptions
 from . import __version__
 from . import CaptionQuery, Playlist, Stream
 from .helpers import safe_filename, setup_logger
