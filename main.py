@@ -167,9 +167,9 @@ def get_youtube_video(track_title, artist_name, duration) -> str | None:
 
 def get_yt_object(video_link) -> YouTube | None:
     if use_proxies:
-        yt = YouTube(url=video_link, proxies=Proxy.get_random_proxy())
+        yt = YouTube(url=video_link, use_po_token=True, proxies=Proxy.get_random_proxy())
     else:
-        yt = YouTube(url=video_link)
+        yt = YouTube(url=video_link, use_po_token=True)
     return yt
 
 def download_audio_from_youtube(download_path, title, artist, duration, album_cover_url, queue_index) -> None:
